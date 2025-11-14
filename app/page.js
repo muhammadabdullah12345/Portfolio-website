@@ -259,7 +259,7 @@ export default function Home() {
                       alt="Muhammad Abdullah"
                       layout="fill"
                       objectFit="cover"
-                      objectPosition="center 35%" // Adjusted to move image up within frame
+                      objectPosition="center 20%" // Adjusted to move image up within frame
                       priority
                     />
                   </div>
