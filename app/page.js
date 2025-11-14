@@ -302,7 +302,7 @@ export default function Home() {
                     "Built a fully responsive construction services website for a Saudi client using React, TypeScript, Tailwind CSS, and shadcn/ui with a modern, optimized UI.",
                   github: "https://github.com/inlights2/des",
                   live: "https://des-pi.vercel.app/",
-                  image: "/images/project1.png",
+                  image: "/images/project1.jpg",
                 },
                 {
                   title: "inLights Website",
@@ -328,7 +328,7 @@ export default function Home() {
                     "Developing a location discovery platform with AI-powered image search, enabling users to find similar places, manage wishlists, and book locations seamlessly.",
                   github: "https://github.com/inlights2/legend-locations",
                   live: "https://legend-locations.vercel.app/",
-                  image: "/images/project4.png",
+                  image: "/images/project4.jpg",
                 },
               ].map((project, index) => (
                 <motion.div
