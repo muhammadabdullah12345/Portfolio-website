@@ -255,7 +255,7 @@ export default function Home() {
                   {/* Improved image container with better positioning */}
                   <div className="w-full h-full relative">
                     <Image
-                      src="/images/pf1.jpg"
+                      src="/images/myself.jpg"
                       alt="Muhammad Abdullah"
                       layout="fill"
                       objectFit="cover"
