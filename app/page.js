@@ -297,16 +297,15 @@ export default function Home() {
             >
               {[
                 {
-                  title: "inLights Website 1",
+                  title: "Deewan Engineering Solutions(DES)",
                   description:
-                    "First version of inLights company website developed during internship. Built with React, Next.js and Tailwind CSS focusing on modern UI principles.",
-                  github:
-                    "https://github.com/muhammadabdullah12345/InLights-web",
-                  live: "https://in-lights-web.vercel.app/",
+                    "Built a fully responsive construction services website for a Saudi client using React, TypeScript, Tailwind CSS, and shadcn/ui with a modern, optimized UI.",
+                  github: "https://github.com/inlights2/des",
+                  live: "https://des-pi.vercel.app/",
                   image: "/images/project1.png",
                 },
                 {
-                  title: "inLights Website 2",
+                  title: "inLights Website",
                   description:
                     "Updated and redesigned version of the inLights company website with improved user experience, animations, and performance optimizations.",
                   github:
@@ -324,12 +323,11 @@ export default function Home() {
                   image: "/images/project3.png",
                 },
                 {
-                  title: "Fast React Pizza Co.",
+                  title: "Legend Locations",
                   description:
-                    "Pizza ordering app made while learning advanced React concepts. Includes features like real-time order tracking, cart management, and address geocoding.",
-                  github:
-                    "https://github.com/muhammadabdullah12345/Fast-React-Pizza",
-                  live: "https://fast-react-pizza-ten-kohl.vercel.app/",
+                    "Developing a location discovery platform with AI-powered image search, enabling users to find similar places, manage wishlists, and book locations seamlessly.",
+                  github: "https://github.com/inlights2/legend-locations",
+                  live: "https://legend-locations.vercel.app/",
                   image: "/images/project4.png",
                 },
               ].map((project, index) => (
@@ -738,7 +736,7 @@ export default function Home() {
                         LinkedIn
                       </h5>
                       <a
-                        href="https://www.linkedin.com/in/muhammad-abdullah-9279b3250/"
+                        href="https://www.linkedin.com/in/i-abdullah-chaudhary/"
                         className="text-gray-900 dark:text-white hover:text-pink-600 dark:hover:text-pink-400"
                         target="_blank"
                         rel="noopener noreferrer"
