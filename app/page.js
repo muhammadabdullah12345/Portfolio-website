@@ -1,8 +1,14 @@
 "use client";
 import Head from "next/head";
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+} from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
   FaGithub,
   FaLinkedin,
@@ -11,9 +17,11 @@ import {
   FaSun,
   FaExternalLinkAlt,
   FaHeart,
-  FaUserAlt,
+  FaPlay,
+  FaBrain,
   FaCode,
-  FaLaptopCode,
+  FaRocket,
+  FaChevronDown,
 } from "react-icons/fa";
 import {
   SiHtml5,
@@ -24,105 +32,452 @@ import {
   SiTailwindcss,
   SiRedux,
   SiGithub,
+  SiPython,
+  SiTensorflow,
+  SiKeras,
+  SiStreamlit,
+  SiPinecone,
+  SiHuggingface,
 } from "react-icons/si";
-import Image from "next/image";
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const aiProjects = [
+  {
+    number: "01",
+    title: "Hybrid Search RAG",
+    tagline: "Document Q&A with dual-vector retrieval",
+    description:
+      "Combines dense (semantic) and sparse (BM25 keyword) embeddings stored in Pinecone. An alpha slider lets you tune the semantic-to-keyword ratio in real time. Answers are grounded strictly in retrieved chunks — no hallucinations from model memory.",
+    tags: ["Python", "LangChain", "Pinecone", "Groq", "BM25", "Streamlit"],
+    github: "#",
+    demo: "#",
+    video: "#",
+    accent: "#00d4aa",
+  },
+  {
+    number: "02",
+    title: "AI Search Engine",
+    tagline: "Agentic search across Wikipedia, Arxiv & the web",
+    description:
+      "LangChain agent powered by Groq (Qwen3-32B) that routes queries to Wikipedia, Arxiv, or DuckDuckGo based on context. A strict system prompt forces real-time tool use before every answer. Intermediate steps are fully visible in the UI.",
+    tags: [
+      "LangChain",
+      "Groq",
+      "Tools & Agents",
+      "DuckDuckGo",
+      "Arxiv",
+      "Streamlit",
+    ],
+    github: "#",
+    demo: "#",
+    video: "#",
+    accent: "#6c63ff",
+  },
+  {
+    number: "03",
+    title: "Next Word Prediction",
+    tagline: "LSTM trained on Shakespeare's complete works",
+    description:
+      "Sequential model with Embedding → LSTM → Dense layers trained for 100 epochs on the Gutenberg Shakespeare corpus. 20% dropout prevents overfitting. Achieved 73% accuracy. Model saved in H5 format and served via Streamlit.",
+    tags: ["TensorFlow", "Keras", "LSTM", "NLTK", "Streamlit"],
+    github: "#",
+    demo: "#",
+    video: "#",
+    accent: "#f59e0b",
+  },
+  {
+    number: "04",
+    title: "Movie Sentiment Analysis",
+    tagline: "Simple RNN on 50K IMDB reviews — 86% accuracy",
+    description:
+      "Sequential model with Embedding + SimpleRNN trained on the IMDB dataset. Early stopping halted training at epoch 9. Probability threshold of 50% determines positive/negative sentiment. Deployed as a Streamlit app.",
+    tags: ["TensorFlow", "Keras", "RNN", "NLP", "Streamlit"],
+    github: "#",
+    demo: "#",
+    video: "#",
+    accent: "#ef4444",
+  },
+  {
+    number: "05",
+    title: "Bank Churn Prediction",
+    tagline: "ANN classifier with full preprocessing pipeline",
+    description:
+      "End-to-end pipeline: Label Encoding, One-Hot Encoding, StandardScaler, train-test split. ANN trained with Keras predicts employee churn probability. Threshold at 50% for binary output. Served through a clean Streamlit interface.",
+    tags: ["TensorFlow", "Keras", "ANN", "Scikit-learn", "Streamlit"],
+    github: "#",
+    demo: "#",
+    video: "#",
+    accent: "#10b981",
+  },
+];
+
+const webProjects = [
+  {
+    title: "Deewan Engineering Solutions",
+    description:
+      "Fully responsive construction services website for a Saudi client. Built with React, TypeScript, Tailwind CSS, and shadcn/ui.",
+    github: "https://github.com/inlights2/des",
+    live: "https://des-pi.vercel.app/",
+    image: "/images/project1.jpg",
+  },
+  {
+    title: "inLights Website",
+    description:
+      "Redesigned company website with improved UX, animations, and performance optimizations.",
+    github: "https://github.com/muhammadabdullah12345/inlights-web2",
+    live: "https://inlights-web2.vercel.app/",
+    image: "/images/project2.png",
+  },
+  {
+    title: "Shopper — E-Commerce",
+    description:
+      "React + Redux Toolkit e-commerce app with product filtering, cart management, and user authentication.",
+    github:
+      "https://github.com/muhammadabdullah12345/Shopper-The-Ecommerce-world",
+    live: "https://shopper-the-ecommerce-world.vercel.app/",
+    image: "/images/project3.png",
+  },
+  {
+    title: "Legend Locations",
+    description:
+      "Location discovery platform with AI-powered image search, wishlists, and booking.",
+    github: "https://github.com/inlights2/legend-locations",
+    live: "https://legend-locations.vercel.app/",
+    image: "/images/project4.jpg",
+  },
+];
+
+const aiSkills = [
+  { name: "Python", icon: <SiPython className="text-[#3776AB]" /> },
+  { name: "TensorFlow", icon: <SiTensorflow className="text-[#FF6F00]" /> },
+  { name: "Keras", icon: <SiKeras className="text-[#D00000]" /> },
+  { name: "LangChain", icon: <FaBrain className="text-[#00d4aa]" /> },
+  // { name: "Pinecone", icon: <SiPinecone className="text-[#6c63ff]" /> },
+  { name: "Streamlit", icon: <SiStreamlit className="text-[#FF4B4B]" /> },
+  { name: "Groq API", icon: <FaRocket className="text-[#f59e0b]" /> },
+  { name: "Hugging Face", icon: <SiHuggingface className="text-[#FFD21E]" /> },
+];
+
+const webSkills = [
+  { name: "React", icon: <SiReact className="text-[#61DAFB]" /> },
+  {
+    name: "Next.js",
+    icon: <SiNextdotjs className="text-black dark:text-white" />,
+  },
+  { name: "JavaScript", icon: <SiJavascript className="text-[#F7DF1E]" /> },
+  { name: "Tailwind CSS", icon: <SiTailwindcss className="text-[#06B6D4]" /> },
+  { name: "Redux", icon: <SiRedux className="text-[#764ABC]" /> },
+  { name: "HTML5", icon: <SiHtml5 className="text-[#E34F26]" /> },
+  // { name: "CSS3", icon: <SiCss3 className="text-[#1572B6]" /> },
+  { name: "GitHub", icon: <SiGithub className="text-black dark:text-white" /> },
+];
+
+// ─── ANIMATION VARIANTS ───────────────────────────────────────────────────────
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 32 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+
+function Tag({ label, color }) {
+  return (
+    <span
+      className="text-xs font-mono px-2 py-0.5 rounded border"
+      style={{
+        color: color || "#00d4aa",
+        borderColor: (color || "#00d4aa") + "55",
+        background: (color || "#00d4aa") + "11",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+function AIProjectCard({ project, index }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <motion.div
+      custom={index}
+      variants={fadeUp}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative group rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden transition-all duration-300 hover:shadow-2xl"
+      style={{
+        boxShadow: hovered
+          ? `0 0 0 1.5px ${project.accent}55, 0 20px 60px ${project.accent}18`
+          : undefined,
+      }}
+    >
+      {/* Top accent bar */}
+      <div
+        className="h-1 w-full"
+        style={{
+          background: `linear-gradient(90deg, ${project.accent}, ${project.accent}44)`,
+        }}
+      />
+
+      <div className="p-7">
+        {/* Number + title row */}
+        <div className="flex items-start justify-between mb-3">
+          <span
+            className="font-mono text-4xl font-bold opacity-10 dark:opacity-10 select-none"
+            style={{ color: project.accent }}
+          >
+            {project.number}
+          </span>
+          <div className="flex gap-2 mt-1">
+            {project.video && (
+              <a
+                href={project.video}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-current transition-colors text-gray-500 hover:text-current"
+                style={{ "--tw-text-opacity": 1 }}
+                title="Watch Demo"
+              >
+                <FaPlay size={11} style={{ color: project.accent }} />
+              </a>
+            )}
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-white"
+              title="GitHub"
+            >
+              <FaGithub size={13} />
+            </a>
+            <a
+              href={project.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-white"
+              title="Live Demo"
+            >
+              <FaExternalLinkAlt size={11} />
+            </a>
+          </div>
+        </div>
+
+        <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+          {project.title}
+        </h4>
+        <p
+          className="text-sm font-medium mb-3"
+          style={{ color: project.accent }}
+        >
+          {project.tagline}
+        </p>
+        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-5">
+          {project.description}
+        </p>
+
+        <div className="flex flex-wrap gap-1.5">
+          {project.tags.map((t) => (
+            <Tag key={t} label={t} color={project.accent} />
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function WebProjectCard({ project, index }) {
+  return (
+    <motion.div
+      custom={index}
+      variants={fadeUp}
+      className="group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow hover:shadow-xl transition-all duration-300"
+      whileHover={{ y: -4 }}
+    >
+      <div className="h-44 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          className="object-cover object-center"
+          sizes="(max-width:768px) 100vw,50vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-5">
+          <div className="flex gap-3">
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-gray-900 p-2.5 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <FaGithub />
+            </a>
+            <a
+              href={project.live}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-gray-900 p-2.5 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <FaExternalLinkAlt size={12} />
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="p-5">
+        <h4 className="font-bold text-gray-900 dark:text-white mb-1.5">
+          {project.title}
+        </h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {project.description}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+function SkillBadge({ skill, index }) {
+  return (
+    <motion.div
+      custom={index}
+      variants={fadeUp}
+      whileHover={{ scale: 1.06 }}
+      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 flex flex-col items-center gap-2.5 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-300 shadow-sm hover:shadow-md"
+    >
+      <div className="text-3xl">{skill.icon}</div>
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        {skill.name}
+      </span>
+    </motion.div>
+  );
+}
+
+// ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
-    // Check system preference on initial load
     const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
     setDarkMode(prefersDark);
+  }, []);
 
+  useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
+  // Active nav tracking
+  useEffect(() => {
+    const sections = [
+      "home",
+      "ai-projects",
+      "web-projects",
+      "skills",
+      "about",
+      "contact",
+    ];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActiveSection(e.target.id);
+        });
       },
-    },
-  };
+      { threshold: 0.3 },
+    );
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const navLinks = [
+    { label: "AI Projects", href: "#ai-projects" },
+    { label: "Web Projects", href: "#web-projects" },
+    { label: "Skills", href: "#skills" },
+    { label: "About", href: "#about" },
+    { label: "Contact", href: "#contact" },
+  ];
 
   return (
     <>
-      <div className="dark:bg-gray-900 dark:text-white transition-colors duration-300">
+      <div className="dark:bg-gray-950 dark:text-white transition-colors duration-300 font-sans">
         <Head>
-          <title>Muhammad Abdullah | Frontend Developer</title>
+          <title>Muhammad Abdullah | AI Engineer</title>
           <meta
             name="description"
-            content="Portfolio of Muhammad Abdullah, Frontend Web Developer specializing in React and Next.js"
+            content="AI/ML Engineer building intelligent systems with LangChain, TensorFlow, and LLMs. Background in full-stack development."
+          />
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+            rel="stylesheet"
           />
         </Head>
 
-        {/* Navbar */}
-        <nav className="bg-white dark:bg-gray-800 shadow-md fixed top-0 w-full z-50 transition-all duration-300">
-          <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-              Abdullah.dev
-            </h1>
+        {/* ── NAVBAR ── */}
+        <nav className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-sm fixed top-0 w-full z-50 border-b border-gray-100 dark:border-gray-800 transition-all duration-300">
+          <div className="max-w-6xl mx-auto px-5 py-3.5 flex justify-between items-center">
+            <a
+              href="#home"
+              className="font-mono text-lg font-bold text-gray-900 dark:text-white"
+            >
+              abdullah<span className="text-[#00d4aa]">.ai</span>
+            </a>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-8">
-              {["Home", "Projects", "Skills", "About", "Contact"].map(
-                (item) => (
-                  <a
-                    key={item}
-                    href={item === "Home" ? "#" : `#${item.toLowerCase()}`}
-                    className="text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors duration-300"
-                  >
-                    {item}
-                  </a>
-                )
-              )}
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center gap-7">
+              {navLinks.map(({ label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                >
+                  {label}
+                </a>
+              ))}
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300"
-                aria-label="Toggle dark mode"
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               >
                 {darkMode ? (
-                  <FaSun className="text-yellow-400" />
+                  <FaSun className="text-yellow-400" size={14} />
                 ) : (
-                  <FaMoon className="text-gray-700" />
+                  <FaMoon className="text-gray-600" size={14} />
                 )}
               </button>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
+            {/* Mobile */}
+            <div className="md:hidden flex items-center gap-3">
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className="p-2 mr-4 rounded-full bg-gray-100 dark:bg-gray-700"
-                aria-label="Toggle dark mode"
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
               >
                 {darkMode ? (
-                  <FaSun className="text-yellow-400" />
+                  <FaSun className="text-yellow-400" size={13} />
                 ) : (
-                  <FaMoon className="text-gray-700" />
+                  <FaMoon className="text-gray-600" size={13} />
                 )}
               </button>
               <button
-                onClick={toggleMenu}
-                className="text-gray-700 dark:text-gray-200 focus:outline-none"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-gray-700 dark:text-gray-300"
               >
                 <svg
-                  className="h-6 w-6"
+                  className="h-5 w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -147,651 +502,635 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white dark:bg-gray-800 shadow-lg"
-            >
-              <div className="px-4 py-4 space-y-4">
-                {["Home", "Projects", "Skills", "About", "Contact"].map(
-                  (item) => (
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="md:hidden bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800"
+              >
+                <div className="px-5 py-4 space-y-3">
+                  {navLinks.map(({ label, href }) => (
                     <a
-                      key={item}
-                      href={item === "Home" ? "#" : `#${item.toLowerCase()}`}
-                      className="block text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400"
+                      key={label}
+                      href={href}
                       onClick={() => setIsMenuOpen(false)}
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-[#00d4aa]"
                     >
-                      {item}
+                      {label}
                     </a>
-                  )
-                )}
-              </div>
-            </motion.div>
-          )}
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </nav>
 
-        {/* Hero Section */}
+        {/* ── HERO ── */}
         <section
-          className="min-h-screen flex items-center justify-center bg-gradient-to-b from-pink-50 to-white dark:from-gray-900 dark:to-gray-800 px-4 pt-28"
           id="home"
+          className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950 px-5 pt-24 pb-16 relative overflow-hidden"
         >
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
+          {/* Subtle grid background */}
+          <div
+            className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+            style={{
+              backgroundImage:
+                "linear-gradient(#000 1px,transparent 1px),linear-gradient(90deg,#000 1px,transparent 1px)",
+              backgroundSize: "48px 48px",
+            }}
+          />
+
+          {/* Glow blobs */}
+          <div
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-10 dark:opacity-10 pointer-events-none"
+            style={{
+              background: "radial-gradient(circle, #00d4aa, transparent 70%)",
+            }}
+          />
+          <div
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-8 dark:opacity-8 pointer-events-none"
+            style={{
+              background: "radial-gradient(circle, #6c63ff, transparent 70%)",
+            }}
+          />
+
+          <div className="max-w-6xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
+            {/* Left */}
             <motion.div
-              className="text-center md:text-left md:w-1/2 mb-10 md:mb-0"
+              className="md:w-1/2 text-center md:text-left"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              <motion.span
-                className="inline-block bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 px-4 py-1 rounded-full text-sm font-medium mb-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="inline-flex items-center gap-2 border border-[#00d4aa]/30 bg-[#00d4aa]/5 text-[#00d4aa] px-4 py-1.5 rounded-full text-xs font-mono font-semibold mb-6 tracking-wide"
               >
-                Frontend Developer
-              </motion.span>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00d4aa] animate-pulse" />
+                AI Engineer · Open to Work
+              </motion.div>
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-5 leading-tight text-gray-900 dark:text-white">
                 Hi, I&apos;m{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                  Muhammad Abdullah
+                <span className="relative">
+                  <span
+                    className="text-transparent bg-clip-text"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(135deg, #00d4aa, #6c63ff)",
+                    }}
+                  >
+                    Abdullah
+                  </span>
                 </span>
-              </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-lg">
-                Frontend Web Developer specializing in creating stunning,
-                responsive websites with React, Next.js, and Tailwind CSS.
+              </h1>
+
+              <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg leading-relaxed">
+                Building intelligent systems with{" "}
+                <span className="text-gray-900 dark:text-white font-semibold">
+                  LangChain, TensorFlow,
+                </span>{" "}
+                and large language models. Former full-stack developer — now
+                focused on{" "}
+                <span className="text-gray-900 dark:text-white font-semibold">
+                  AI engineering.
+                </span>
               </p>
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+
+              <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-8">
                 <a
-                  href="#projects"
-                  className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-8 py-3 rounded-full hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  href="#ai-projects"
+                  className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
+                  style={{
+                    background: "linear-gradient(135deg, #00d4aa, #6c63ff)",
+                  }}
                 >
-                  View My Work
+                  View AI Projects
                 </a>
                 <a
-                  href="#contact"
-                  className="bg-transparent border-2 border-pink-600 dark:border-pink-400 text-pink-600 dark:text-pink-400 px-8 py-3 rounded-full hover:bg-pink-600/10 transition-colors"
+                  href="/resume.pdf"
+                  download
+                  className="px-6 py-2.5 rounded-lg text-sm font-semibold border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-[#00d4aa] hover:text-[#00d4aa] transition-all"
                 >
-                  Contact Me
+                  Download CV
                 </a>
               </div>
-              <motion.div
-                className="flex gap-5 mt-10 justify-center md:justify-start"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1, duration: 0.5 }}
-              >
-                <a
-                  href="https://github.com/muhammadabdullah12345"
-                  className="text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 text-xl"
-                >
-                  <FaGithub />
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/muhammad-abdullah-9279b3250/"
-                  className="text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 text-xl"
-                >
-                  <FaLinkedin />
-                </a>
-                <a
-                  href="mailto:abd0172817@gmail.com"
-                  className="text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 text-xl"
-                >
-                  <FaEnvelope />
-                </a>
-              </motion.div>
+
+              <div className="flex gap-4 justify-center md:justify-start">
+                {[
+                  {
+                    href: "https://github.com/muhammadabdullah12345",
+                    icon: <FaGithub />,
+                  },
+                  {
+                    href: "https://www.linkedin.com/in/i-abdullah-chaudhary/",
+                    icon: <FaLinkedin />,
+                  },
+                  { href: "mailto:abd0172817@gmail.com", icon: <FaEnvelope /> },
+                ].map(({ href, icon }, i) => (
+                  <a
+                    key={i}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-lg border border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#00d4aa] hover:border-[#00d4aa]/40 transition-all text-lg"
+                  >
+                    {icon}
+                  </a>
+                ))}
+              </div>
             </motion.div>
+
+            {/* Right — Photo */}
             <motion.div
-              className="md:w-1/2 flex justify-center"
-              initial={{ opacity: 0, scale: 0.8 }}
+              className="md:w-2/5 flex justify-center"
+              initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <div className="relative">
-                <div className="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full absolute blur-2xl opacity-20"></div>
-                <div className="w-64 h-64 md:w-80 md:h-80 bg-white dark:bg-gray-800 rounded-full overflow-hidden shadow-xl border-4 border-white dark:border-gray-700 relative z-10">
-                  {/* Improved image container with better positioning */}
-                  <div className="w-full h-full relative">
-                    <Image
-                      src="/images/myself.jpg"
-                      alt="Muhammad Abdullah"
-                      layout="fill"
-                      objectFit="cover"
-                      objectPosition="center 20%" // Adjusted to move image up within frame
-                      priority
-                    />
-                  </div>
+                <div
+                  className="absolute inset-0 rounded-2xl blur-2xl opacity-30"
+                  style={{
+                    background: "linear-gradient(135deg, #00d4aa, #6c63ff)",
+                    transform: "scale(1.1)",
+                  }}
+                />
+                <div className="w-60 h-60 md:w-72 md:h-72 rounded-2xl overflow-hidden border-2 border-white/20 relative z-10 shadow-2xl">
+                  <Image
+                    src="/images/myself.jpg"
+                    alt="Muhammad Abdullah"
+                    fill
+                    className="object-cover object-center"
+                    priority
+                  />
                 </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Scroll cue */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 dark:text-gray-600 flex flex-col items-center gap-1"
+          >
+            <span className="text-xs font-mono">scroll</span>
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            >
+              <FaChevronDown size={12} />
+            </motion.div>
+          </motion.div>
+        </section>
+
+        {/* ── AI PROJECTS ── */}
+        <section
+          id="ai-projects"
+          className="py-24 px-5 bg-gray-50 dark:bg-gray-900"
+        >
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              className="mb-14"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+            >
+              <span className="font-mono text-xs font-semibold text-[#00d4aa] uppercase tracking-widest">
+                Featured Work
+              </span>
+              <h2 className="text-4xl font-bold mt-2 mb-3 text-gray-900 dark:text-white">
+                AI Projects
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 max-w-xl text-sm leading-relaxed">
+                Built during my AI/ML learning journey — each project shipped
+                with a live demo, GitHub repo, and walkthrough video.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+              variants={stagger}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {aiProjects.map((p, i) => (
+                <AIProjectCard key={p.number} project={p} index={i} />
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── WEB PROJECTS ── */}
+        <section
+          id="web-projects"
+          className="py-24 px-5 bg-white dark:bg-gray-950"
+        >
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              className="mb-14"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+            >
+              <span className="font-mono text-xs font-semibold text-[#6c63ff] uppercase tracking-widest">
+                Previous Work
+              </span>
+              <h2 className="text-4xl font-bold mt-2 mb-3 text-gray-900 dark:text-white">
+                Web Development
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 max-w-xl text-sm leading-relaxed">
+                Projects from my full-stack development phase — real client work
+                and personal builds.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+              variants={stagger}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {webProjects.map((p, i) => (
+                <WebProjectCard key={p.title} project={p} index={i} />
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── SKILLS ── */}
+        <section id="skills" className="py-24 px-5 bg-gray-50 dark:bg-gray-900">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              className="mb-14"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+            >
+              <span className="font-mono text-xs font-semibold text-[#f59e0b] uppercase tracking-widest">
+                Tech Stack
+              </span>
+              <h2 className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
+                Skills & Tools
+              </h2>
+            </motion.div>
+
+            {/* AI Skills */}
+            <motion.div
+              className="mb-12"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-xs font-mono font-semibold text-[#00d4aa] uppercase tracking-widest">
+                  AI / ML
+                </span>
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-800" />
+              </div>
+              <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-4">
+                {aiSkills.map((s, i) => (
+                  <SkillBadge key={s.name} skill={s} index={i} />
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Web Skills */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-xs font-mono font-semibold text-[#6c63ff] uppercase tracking-widest">
+                  Web Dev
+                </span>
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-800" />
+              </div>
+              <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-4">
+                {webSkills.map((s, i) => (
+                  <SkillBadge key={s.name} skill={s} index={i} />
+                ))}
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* Projects Section */}
-        <section className="py-24 px-4 bg-white dark:bg-gray-800" id="projects">
+        {/* ── ABOUT ── */}
+        <section id="about" className="py-24 px-5 bg-white dark:bg-gray-950">
           <div className="max-w-6xl mx-auto">
             <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <span className="text-sm font-medium text-pink-600 dark:text-pink-400 uppercase tracking-wider">
-                My Work
-              </span>
-              <h3 className="text-4xl font-bold mt-2 mb-4">
-                Featured Projects
-              </h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-pink-600 to-purple-600 mx-auto"></div>
-            </motion.div>
-
-            <motion.div
-              className="grid md:grid-cols-2 gap-10"
-              variants={staggerContainer}
+              className="mb-14"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
+              variants={fadeUp}
             >
-              {[
-                {
-                  title: "Deewan Engineering Solutions(DES)",
-                  description:
-                    "Built a fully responsive construction services website for a Saudi client using React, TypeScript, Tailwind CSS, and shadcn/ui with a modern, optimized UI.",
-                  github: "https://github.com/inlights2/des",
-                  live: "https://des-pi.vercel.app/",
-                  image: "/images/project1.jpg",
-                },
-                {
-                  title: "inLights Website",
-                  description:
-                    "Updated and redesigned version of the inLights company website with improved user experience, animations, and performance optimizations.",
-                  github:
-                    "https://github.com/muhammadabdullah12345/inlights-web2",
-                  live: "https://inlights-web2.vercel.app/",
-                  image: "/images/project2.png",
-                },
-                {
-                  title: "Shopper",
-                  description:
-                    "An eCommerce site built with React and Redux Toolkit. Features include product filtering, cart management, user authentication, and responsive design.",
-                  github:
-                    "https://github.com/muhammadabdullah12345/Shopper-The-Ecommerce-world",
-                  live: "https://shopper-the-ecommerce-world.vercel.app/",
-                  image: "/images/project3.png",
-                },
-                {
-                  title: "Legend Locations",
-                  description:
-                    "Developing a location discovery platform with AI-powered image search, enabling users to find similar places, manage wishlists, and book locations seamlessly.",
-                  github: "https://github.com/inlights2/legend-locations",
-                  live: "https://legend-locations.vercel.app/",
-                  image: "/images/project4.jpg",
-                },
-              ].map((project, index) => (
-                <motion.div
-                  key={index}
-                  className="group rounded-xl overflow-hidden border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300"
-                  variants={fadeInUp}
-                  whileHover={{ y: -5 }}
-                >
-                  <div className="h-56 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
-                    <Image
-                      src={project.image}
-                      alt={`${project.title} preview`}
-                      fill
-                      className="object-cover object-center"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      priority={index < 2}
-                    />
-
-                    {/* Overlay with links */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-6">
-                      <div className="flex gap-4">
-                        <a
-                          href={project.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-white text-gray-900 p-3 rounded-full hover:bg-pink-600 hover:text-white transition-colors"
-                        >
-                          <FaGithub />
-                        </a>
-                        <a
-                          href={project.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-white text-gray-900 p-3 rounded-full hover:bg-pink-600 hover:text-white transition-colors"
-                        >
-                          <FaExternalLinkAlt />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h4 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
-                      {project.title}
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
-                      {project.description}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <div className="flex space-x-4">
-                        <Link
-                          href={project.github}
-                          className="text-pink-600 dark:text-pink-400 hover:underline flex items-center gap-1 text-sm"
-                          target="_blank"
-                        >
-                          <FaGithub /> GitHub
-                        </Link>
-                        <Link
-                          href={project.live}
-                          className="text-pink-600 dark:text-pink-400 hover:underline flex items-center gap-1 text-sm"
-                          target="_blank"
-                        >
-                          <FaExternalLinkAlt /> Live Demo
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Skills Section */}
-        <section
-          className="py-24 px-4 bg-gradient-to-b from-pink-50 to-white dark:from-gray-900 dark:to-gray-800"
-          id="skills"
-        >
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <span className="text-sm font-medium text-pink-600 dark:text-pink-400 uppercase tracking-wider">
-                My Expertise
+              <span className="font-mono text-xs font-semibold text-[#10b981] uppercase tracking-widest">
+                Background
               </span>
-              <h3 className="text-4xl font-bold mt-2 mb-4">
-                Skills & Technologies
-              </h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-pink-600 to-purple-600 mx-auto"></div>
-            </motion.div>
-
-            <motion.div
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              {[
-                { icon: <SiHtml5 className="text-[#E34F26]" />, name: "HTML" },
-                { icon: <SiCss3 className="text-[#1572B6]" />, name: "CSS" },
-                {
-                  icon: <SiJavascript className="text-[#F7DF1E]" />,
-                  name: "JavaScript",
-                },
-                { icon: <SiReact className="text-[#61DAFB]" />, name: "React" },
-                {
-                  icon: <SiNextdotjs className="text-black dark:text-white" />,
-                  name: "Next.js",
-                },
-                {
-                  icon: <SiTailwindcss className="text-[#06B6D4]" />,
-                  name: "Tailwind CSS",
-                },
-                {
-                  icon: <SiRedux className="text-[#764ABC]" />,
-                  name: "Redux Toolkit",
-                },
-                {
-                  icon: <SiGithub className="text-black dark:text-white" />,
-                  name: "GitHub",
-                },
-              ].map((skill, index) => (
-                <motion.div
-                  key={index}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center group hover:border-pink-400 transition-all duration-300"
-                  variants={fadeInUp}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                    {skill.icon}
-                  </div>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">
-                    {skill.name}
-                  </span>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* About Section */}
-        <section
-          className="py-24 px-6 bg-gradient-to-br from-gray-900 to-gray-800"
-          id="about"
-        >
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <span className="text-sm font-medium text-pink-500 uppercase tracking-wider">
-                Get To Know Me
-              </span>
-              <h3 className="text-4xl font-bold mt-2 mb-4 text-white">
+              <h2 className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
                 About Me
-              </h3>
-              <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600 mx-auto"></div>
+              </h2>
             </motion.div>
 
-            <div className="flex flex-col lg:flex-row items-center gap-12">
-              {/* Left Column - Profile Card */}
+            <div className="grid lg:grid-cols-2 gap-14 items-center">
+              {/* Left — bio */}
               <motion.div
-                className="lg:w-2/5"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial="hidden"
+                whileInView="visible"
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+                variants={stagger}
+                className="space-y-5 text-gray-600 dark:text-gray-400 text-[15px] leading-relaxed"
               >
-                <div className="relative group">
-                  {/* Animated glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
+                <motion.p variants={fadeUp}>
+                  I&apos;m{" "}
+                  <span className="text-gray-900 dark:text-white font-semibold">
+                    Muhammad Abdullah
+                  </span>
+                  , an AI/ML Engineer from Pakistan currently building
+                  intelligent systems with LangChain, TensorFlow, and large
+                  language models.
+                </motion.p>
+                <motion.p variants={fadeUp}>
+                  My journey started in full-stack development — I shipped real
+                  client projects using React and Next.js. That engineering
+                  foundation has made the transition into AI much smoother: I
+                  understand how to build production systems, not just
+                  notebooks.
+                </motion.p>
+                <motion.p variants={fadeUp}>
+                  Over the past several months I have built five AI projects
+                  covering neural networks, NLP, RAG, and agentic systems — each
+                  deployed with a live demo and public GitHub repo. I post every
+                  project on LinkedIn as I build, documenting the process
+                  publicly.
+                </motion.p>
+                <motion.p variants={fadeUp}>
+                  I&apos;m actively seeking my{" "}
+                  <span className="text-gray-900 dark:text-white font-semibold">
+                    first full-time AI Engineer role.
+                  </span>{" "}
+                  If you are working on something interesting in AI, I would
+                  genuinely love to connect.
+                </motion.p>
 
-                  {/* Card content */}
-                  <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl p-8 relative z-10 border border-gray-700 shadow-2xl">
-                    <div className="text-8xl text-pink-500 font-bold mb-6 text-center">
-                      MA
-                    </div>
-                    <div className="h-px w-full bg-gradient-to-r from-transparent via-pink-500 to-transparent my-6"></div>
-                    <p className="italic text-gray-300 text-center text-lg">
-                      Creating beautiful web experiences one line of code at a
-                      time.
-                    </p>
-
-                    {/* Skills badges */}
-                    <div className="flex flex-wrap justify-center gap-2 mt-8">
-                      {["React", "Next.js", "Tailwind CSS", "UI/UX"].map(
-                        (skill) => (
-                          <span
-                            key={skill}
-                            className="px-3 py-1 bg-gray-700/50 border border-gray-600 rounded-full text-sm text-gray-300"
-                          >
-                            {skill}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <motion.div
+                  variants={fadeUp}
+                  className="pt-2 flex flex-wrap gap-3"
+                >
+                  <a
+                    href="#contact"
+                    className="px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90"
+                    style={{
+                      background: "linear-gradient(135deg, #00d4aa, #6c63ff)",
+                    }}
+                  >
+                    Get in Touch
+                  </a>
+                  <a
+                    href="/resume.pdf"
+                    download
+                    className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-[#00d4aa] hover:text-[#00d4aa] transition-all"
+                  >
+                    Download CV
+                  </a>
+                </motion.div>
               </motion.div>
 
-              {/* Right Column - Bio */}
+              {/* Right — stat cards */}
               <motion.div
-                className="lg:w-3/5"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial="hidden"
+                whileInView="visible"
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                variants={stagger}
+                className="grid grid-cols-2 gap-4"
               >
-                <div className="space-y-6 text-gray-300">
-                  <div className="flex items-start gap-4">
-                    <div className="mt-1 p-2 bg-pink-500/20 rounded-lg text-pink-500">
-                      <FaUserAlt size={18} />
-                    </div>
-                    <p className="text-lg">
-                      I&apos;m Muhammad Abdullah, a passionate frontend web
-                      developer with a keen eye for creating interactive and
-                      visually appealing web experiences.
-                    </p>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="mt-1 p-2 bg-pink-500/20 rounded-lg text-pink-500">
-                      <FaCode size={18} />
-                    </div>
-                    <p>
-                      My journey in web development has allowed me to build
-                      multiple projects using React, Next.js, and Tailwind CSS.
-                      I take pride in crafting responsive, user-friendly
-                      interfaces that deliver exceptional user experiences.
-                    </p>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="mt-1 p-2 bg-pink-500/20 rounded-lg text-pink-500">
-                      <FaLaptopCode size={18} />
-                    </div>
-                    <p>
-                      Currently, I&apos;m enhancing my skills during an
-                      internship where I&apos;ve developed company websites from
-                      scratch, turning design concepts into fully functional web
-                      applications.
-                    </p>
-                  </div>
-
-                  <div className="pt-6">
-                    <a
-                      href="#contact"
-                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-medium rounded-lg transition-transform hover:scale-105"
+                {[
+                  {
+                    label: "AI Projects Shipped",
+                    value: "5",
+                    accent: "#00d4aa",
+                  },
+                  {
+                    label: "Web Projects Delivered",
+                    value: "4+",
+                    accent: "#6c63ff",
+                  },
+                  {
+                    label: "Best Model Accuracy",
+                    value: "86%",
+                    accent: "#f59e0b",
+                  },
+                  { label: "Months in AI/ML", value: "6+", accent: "#10b981" },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    custom={i}
+                    variants={fadeUp}
+                    className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-6 text-center"
+                  >
+                    <div
+                      className="text-4xl font-bold mb-1"
+                      style={{ color: stat.accent }}
                     >
-                      Let&apos;s work together
-                      <svg
-                        className="w-4 h-4 ml-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </div>
+                      {stat.value}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 font-medium">
+                      {stat.label}
+                    </div>
+                  </motion.div>
+                ))}
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Contact Section */}
+        {/* ── CONTACT ── */}
         <section
-          className="py-12 px-4 bg-gradient-to-b from-pink-50 to-white dark:from-gray-900 dark:to-gray-800"
           id="contact"
+          className="py-24 px-5 bg-gray-50 dark:bg-gray-900"
         >
           <div className="max-w-6xl mx-auto">
             <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              className="mb-14"
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              variants={fadeUp}
             >
-              <span className="text-sm font-medium text-pink-600 dark:text-pink-400 uppercase tracking-wider">
-                Get In Touch
+              <span className="font-mono text-xs font-semibold text-[#ef4444] uppercase tracking-widest">
+                Let&apos;s Talk
               </span>
-              <h3 className="text-4xl font-bold mt-2 mb-4">Contact Me</h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-pink-600 to-purple-600 mx-auto"></div>
+              <h2 className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
+                Contact
+              </h2>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div className="grid md:grid-cols-2 gap-10">
+              {/* Form */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial="hidden"
+                whileInView="visible"
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-100 dark:border-gray-700"
+                variants={fadeUp}
+                className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm"
               >
-                <h4 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-                  Send Me a Message
-                </h4>
-                <form className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      Your Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="John Doe"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      Your Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="john@example.com"
-                    />
-                  </div>
+                <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">
+                  Send a Message
+                </h3>
+                <form
+                  className="space-y-4"
+                  onSubmit={(e) => e.preventDefault()}
+                >
+                  {[
+                    {
+                      id: "name",
+                      label: "Name",
+                      type: "text",
+                      placeholder: "Your name",
+                    },
+                    {
+                      id: "email",
+                      label: "Email",
+                      type: "email",
+                      placeholder: "your@email.com",
+                    },
+                  ].map(({ id, label, type, placeholder }) => (
+                    <div key={id}>
+                      <label
+                        htmlFor={id}
+                        className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide"
+                      >
+                        {label}
+                      </label>
+                      <input
+                        type={type}
+                        id={id}
+                        placeholder={placeholder}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00d4aa]/40 focus:border-[#00d4aa] transition-all"
+                      />
+                    </div>
+                  ))}
                   <div>
                     <label
                       htmlFor="message"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                      className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide"
                     >
-                      Your Message
+                      Message
                     </label>
                     <textarea
                       id="message"
                       rows={4}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="Hello, I'd like to talk about..."
-                    ></textarea>
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00d4aa]/40 focus:border-[#00d4aa] transition-all resize-none"
+                    />
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 px-6 rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+                    className="w-full py-3 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
+                    style={{
+                      background: "linear-gradient(135deg, #00d4aa, #6c63ff)",
+                    }}
                   >
                     Send Message
                   </button>
                 </form>
               </motion.div>
 
+              {/* Contact info */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial="hidden"
+                whileInView="visible"
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="space-y-8"
+                variants={stagger}
+                className="space-y-5 pt-4"
               >
-                <div>
-                  <h4 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-                    Contact Information
-                  </h4>
-                  <p className="text-gray-600 dark:text-gray-300 mb-8">
-                    Feel free to reach out to me through any of these platforms.
-                    I&apos;m always open to discussing new projects, creative
-                    ideas, or opportunities.
-                  </p>
-                </div>
+                <motion.p
+                  variants={fadeUp}
+                  className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed"
+                >
+                  I am actively looking for my first AI Engineer role. Whether
+                  you have an opportunity, a collaboration idea, or just want to
+                  talk about AI — my inbox is open.
+                </motion.p>
 
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-pink-100 dark:bg-pink-900/30 p-3 rounded-full text-pink-600 dark:text-pink-400">
-                      <FaEnvelope />
+                {[
+                  {
+                    icon: <FaEnvelope />,
+                    label: "Email",
+                    value: "abd0172817@gmail.com",
+                    href: "mailto:abd0172817@gmail.com",
+                    color: "#ef4444",
+                  },
+                  {
+                    icon: <FaLinkedin />,
+                    label: "LinkedIn",
+                    value: "Muhammad Abdullah",
+                    href: "https://www.linkedin.com/in/i-abdullah-chaudhary/",
+                    color: "#6c63ff",
+                  },
+                  {
+                    icon: <FaGithub />,
+                    label: "GitHub",
+                    value: "muhammadabdullah12345",
+                    href: "https://github.com/muhammadabdullah12345",
+                    color: "#00d4aa",
+                  },
+                ].map(({ icon, label, value, href, color }, i) => (
+                  <motion.a
+                    key={label}
+                    custom={i}
+                    variants={fadeUp}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 hover:border-gray-300 dark:hover:border-gray-700 transition-all group shadow-sm"
+                  >
+                    <div
+                      className="p-2.5 rounded-lg text-sm"
+                      style={{ color, background: color + "15" }}
+                    >
+                      {icon}
                     </div>
                     <div>
-                      <h5 className="text-sm text-gray-500 dark:text-gray-400">
-                        Email
-                      </h5>
-                      <a
-                        href="mailto:abd0172817@gmail.com"
-                        className="text-gray-900 dark:text-white hover:text-pink-600 dark:hover:text-pink-400"
-                      >
-                        abd0172817@gmail.com
-                      </a>
+                      <div className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                        {label}
+                      </div>
+                      <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-[#00d4aa] transition-colors">
+                        {value}
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-pink-100 dark:bg-pink-900/30 p-3 rounded-full text-pink-600 dark:text-pink-400">
-                      <FaLinkedin />
-                    </div>
-                    <div>
-                      <h5 className="text-sm text-gray-500 dark:text-gray-400">
-                        LinkedIn
-                      </h5>
-                      <a
-                        href="https://www.linkedin.com/in/i-abdullah-chaudhary/"
-                        className="text-gray-900 dark:text-white hover:text-pink-600 dark:hover:text-pink-400"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Muhammad Abdullah
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-pink-100 dark:bg-pink-900/30 p-3 rounded-full text-pink-600 dark:text-pink-400">
-                      <FaGithub />
-                    </div>
-                    <div>
-                      <h5 className="text-sm text-gray-500 dark:text-gray-400">
-                        GitHub
-                      </h5>
-                      <a
-                        href="https://github.com/muhammadabdullah12345"
-                        className="text-gray-900 dark:text-white hover:text-pink-600 dark:hover:text-pink-400"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        muhammadabdullah12345
-                      </a>
-                    </div>
-                  </div>
-                </div>
+                  </motion.a>
+                ))}
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="bg-white dark:bg-gray-800 py-12">
-          <div className="max-w-6xl mx-auto px-6">
-            {/* Top Section with Logo and Links */}
-
-            {/* Divider */}
-            <div className="border-t border-gray-200 dark:border-gray-700 my-8"></div>
-
-            {/* Bottom Section */}
-            <div className="flex flex-col items-center">
-              <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
-                <p>
-                  &copy; {new Date().getFullYear()} Muhammad Abdullah. All
-                  rights reserved.
-                </p>
-              </div>
-              <div className="flex items-center mt-3 text-gray-500 dark:text-gray-500 text-sm">
-                <span>Crafted with</span>
-                <FaHeart className="mx-1 text-pink-500" size={12} />
-                <span>using React, Next.js & Tailwind CSS</span>
-              </div>
-            </div>
+        {/* ── FOOTER ── */}
+        <footer className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 py-8 px-5">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400 dark:text-gray-600">
+            <span className="font-mono">
+              © {new Date().getFullYear()} Muhammad Abdullah
+            </span>
+            <span className="flex items-center gap-1">
+              Built with <FaHeart className="text-[#ef4444] mx-0.5" size={10} />{" "}
+              using Next.js & Tailwind CSS
+            </span>
           </div>
         </footer>
       </div>
