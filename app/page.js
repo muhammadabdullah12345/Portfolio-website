@@ -13,8 +13,6 @@ import {
   FaGithub,
   FaLinkedin,
   FaEnvelope,
-  FaMoon,
-  FaSun,
   FaExternalLinkAlt,
   FaHeart,
   FaPlay,
@@ -153,7 +151,6 @@ const aiSkills = [
   { name: "TensorFlow", icon: <SiTensorflow className="text-[#FF6F00]" /> },
   { name: "Keras", icon: <SiKeras className="text-[#D00000]" /> },
   { name: "LangChain", icon: <FaBrain className="text-[#00d4aa]" /> },
-  // { name: "Pinecone", icon: <SiPinecone className="text-[#6c63ff]" /> },
   { name: "Streamlit", icon: <SiStreamlit className="text-[#FF4B4B]" /> },
   { name: "Groq API", icon: <FaRocket className="text-[#f59e0b]" /> },
   { name: "Hugging Face", icon: <SiHuggingface className="text-[#FFD21E]" /> },
@@ -161,16 +158,12 @@ const aiSkills = [
 
 const webSkills = [
   { name: "React", icon: <SiReact className="text-[#61DAFB]" /> },
-  {
-    name: "Next.js",
-    icon: <SiNextdotjs className="text-black dark:text-white" />,
-  },
+  { name: "Next.js", icon: <SiNextdotjs className="text-white" /> },
   { name: "JavaScript", icon: <SiJavascript className="text-[#F7DF1E]" /> },
   { name: "Tailwind CSS", icon: <SiTailwindcss className="text-[#06B6D4]" /> },
   { name: "Redux", icon: <SiRedux className="text-[#764ABC]" /> },
   { name: "HTML5", icon: <SiHtml5 className="text-[#E34F26]" /> },
-  // { name: "CSS3", icon: <SiCss3 className="text-[#1572B6]" /> },
-  { name: "GitHub", icon: <SiGithub className="text-black dark:text-white" /> },
+  { name: "GitHub", icon: <SiGithub className="text-white" /> },
 ];
 
 // ─── ANIMATION VARIANTS ───────────────────────────────────────────────────────
@@ -214,7 +207,7 @@ function AIProjectCard({ project, index }) {
       variants={fadeUp}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative group rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden transition-all duration-300 hover:shadow-2xl"
+      className="relative group rounded-2xl border border-gray-700 bg-gray-900 overflow-hidden transition-all duration-300 hover:shadow-2xl"
       style={{
         boxShadow: hovered
           ? `0 0 0 1.5px ${project.accent}55, 0 20px 60px ${project.accent}18`
@@ -233,7 +226,7 @@ function AIProjectCard({ project, index }) {
         {/* Number + title row */}
         <div className="flex items-start justify-between mb-3">
           <span
-            className="font-mono text-4xl font-bold opacity-10 dark:opacity-10 select-none"
+            className="font-mono text-4xl font-bold opacity-10 select-none"
             style={{ color: project.accent }}
           >
             {project.number}
@@ -244,8 +237,7 @@ function AIProjectCard({ project, index }) {
                 href={project.video}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-current transition-colors text-gray-500 hover:text-current"
-                style={{ "--tw-text-opacity": 1 }}
+                className="p-2 rounded-lg border border-gray-700 hover:border-current transition-colors text-gray-500 hover:text-current"
                 title="Watch Demo"
               >
                 <FaPlay size={11} style={{ color: project.accent }} />
@@ -255,7 +247,7 @@ function AIProjectCard({ project, index }) {
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-white"
+              className="p-2 rounded-lg border border-gray-700 text-gray-500 transition-colors hover:text-white"
               title="GitHub"
             >
               <FaGithub size={13} />
@@ -264,7 +256,7 @@ function AIProjectCard({ project, index }) {
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-white"
+              className="p-2 rounded-lg border border-gray-700 text-gray-500 transition-colors hover:text-white"
               title="Live Demo"
             >
               <FaExternalLinkAlt size={11} />
@@ -272,16 +264,14 @@ function AIProjectCard({ project, index }) {
           </div>
         </div>
 
-        <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-          {project.title}
-        </h4>
+        <h4 className="text-xl font-bold text-white mb-1">{project.title}</h4>
         <p
           className="text-sm font-medium mb-3"
           style={{ color: project.accent }}
         >
           {project.tagline}
         </p>
-        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-5">
+        <p className="text-gray-400 text-sm leading-relaxed mb-5">
           {project.description}
         </p>
 
@@ -300,10 +290,10 @@ function WebProjectCard({ project, index }) {
     <motion.div
       custom={index}
       variants={fadeUp}
-      className="group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow hover:shadow-xl transition-all duration-300"
+      className="group rounded-xl overflow-hidden border border-gray-700 bg-gray-900 shadow hover:shadow-xl transition-all duration-300"
       whileHover={{ y: -4 }}
     >
-      <div className="h-44 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
+      <div className="h-44 bg-gray-800 relative overflow-hidden">
         <Image
           src={project.image}
           alt={project.title}
@@ -333,12 +323,8 @@ function WebProjectCard({ project, index }) {
         </div>
       </div>
       <div className="p-5">
-        <h4 className="font-bold text-gray-900 dark:text-white mb-1.5">
-          {project.title}
-        </h4>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {project.description}
-        </p>
+        <h4 className="font-bold text-white mb-1.5">{project.title}</h4>
+        <p className="text-sm text-gray-400">{project.description}</p>
       </div>
     </motion.div>
   );
@@ -350,12 +336,10 @@ function SkillBadge({ skill, index }) {
       custom={index}
       variants={fadeUp}
       whileHover={{ scale: 1.06 }}
-      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 flex flex-col items-center gap-2.5 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-300 shadow-sm hover:shadow-md"
+      className="bg-gray-800 border border-gray-700 rounded-xl p-5 flex flex-col items-center gap-2.5 hover:border-gray-500 transition-all duration-300 shadow-sm hover:shadow-md"
     >
       <div className="text-3xl">{skill.icon}</div>
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        {skill.name}
-      </span>
+      <span className="text-sm font-medium text-gray-300">{skill.name}</span>
     </motion.div>
   );
 }
@@ -363,20 +347,13 @@ function SkillBadge({ skill, index }) {
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function Home() {
-  const [darkMode, setDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
+  // Force dark mode on mount
   useEffect(() => {
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    setDarkMode(prefersDark);
+    document.documentElement.classList.add("dark");
   }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
 
   // Active nav tracking
   useEffect(() => {
@@ -413,7 +390,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="dark:bg-gray-950 dark:text-white transition-colors duration-300 font-sans">
+      <div className="bg-gray-950 text-white transition-colors duration-300 font-sans">
         <Head>
           <title>Muhammad Abdullah | AI Engineer</title>
           <meta
@@ -428,12 +405,9 @@ export default function Home() {
         </Head>
 
         {/* ── NAVBAR ── */}
-        <nav className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-sm fixed top-0 w-full z-50 border-b border-gray-100 dark:border-gray-800 transition-all duration-300">
+        <nav className="bg-gray-950/80 backdrop-blur-md shadow-sm fixed top-0 w-full z-50 border-b border-gray-800 transition-all duration-300">
           <div className="max-w-6xl mx-auto px-5 py-3.5 flex justify-between items-center">
-            <a
-              href="#home"
-              className="font-mono text-lg font-bold text-gray-900 dark:text-white"
-            >
+            <a href="#home" className="font-mono text-lg font-bold text-white">
               abdullah<span className="text-[#00d4aa]">.ai</span>
             </a>
 
@@ -443,38 +417,18 @@ export default function Home() {
                 <a
                   key={label}
                   href={href}
-                  className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                  className="text-sm font-medium text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   {label}
                 </a>
               ))}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              >
-                {darkMode ? (
-                  <FaSun className="text-yellow-400" size={14} />
-                ) : (
-                  <FaMoon className="text-gray-600" size={14} />
-                )}
-              </button>
             </div>
 
             {/* Mobile */}
             <div className="md:hidden flex items-center gap-3">
               <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
-              >
-                {darkMode ? (
-                  <FaSun className="text-yellow-400" size={13} />
-                ) : (
-                  <FaMoon className="text-gray-600" size={13} />
-                )}
-              </button>
-              <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-700 dark:text-gray-300"
+                className="text-gray-300"
               >
                 <svg
                   className="h-5 w-5"
@@ -508,7 +462,7 @@ export default function Home() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="md:hidden bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800"
+                className="md:hidden bg-gray-950 border-t border-gray-800"
               >
                 <div className="px-5 py-4 space-y-3">
                   {navLinks.map(({ label, href }) => (
@@ -516,7 +470,7 @@ export default function Home() {
                       key={label}
                       href={href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-[#00d4aa]"
+                      className="block text-sm font-medium text-gray-300 hover:text-[#00d4aa]"
                     >
                       {label}
                     </a>
@@ -530,27 +484,27 @@ export default function Home() {
         {/* ── HERO ── */}
         <section
           id="home"
-          className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950 px-5 pt-24 pb-16 relative overflow-hidden"
+          className="min-h-screen flex items-center justify-center bg-gray-950 px-5 pt-24 pb-16 relative overflow-hidden"
         >
           {/* Subtle grid background */}
           <div
-            className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+            className="absolute inset-0 opacity-[0.05]"
             style={{
               backgroundImage:
-                "linear-gradient(#000 1px,transparent 1px),linear-gradient(90deg,#000 1px,transparent 1px)",
+                "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)",
               backgroundSize: "48px 48px",
             }}
           />
 
           {/* Glow blobs */}
           <div
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-10 dark:opacity-10 pointer-events-none"
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none"
             style={{
               background: "radial-gradient(circle, #00d4aa, transparent 70%)",
             }}
           />
           <div
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-8 dark:opacity-8 pointer-events-none"
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-8 pointer-events-none"
             style={{
               background: "radial-gradient(circle, #6c63ff, transparent 70%)",
             }}
@@ -574,7 +528,7 @@ export default function Home() {
                 AI Engineer · Open to Work
               </motion.div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-5 leading-tight text-gray-900 dark:text-white">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-5 leading-tight text-white">
                 Hi, I&apos;m{" "}
                 <span className="relative">
                   <span
@@ -589,14 +543,14 @@ export default function Home() {
                 </span>
               </h1>
 
-              <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg leading-relaxed">
+              <p className="text-lg text-gray-400 mb-8 max-w-lg leading-relaxed">
                 Building intelligent systems with{" "}
-                <span className="text-gray-900 dark:text-white font-semibold">
+                <span className="text-white font-semibold">
                   LangChain, TensorFlow,
                 </span>{" "}
                 and large language models. Former full-stack developer — now
                 focused on{" "}
-                <span className="text-gray-900 dark:text-white font-semibold">
+                <span className="text-white font-semibold">
                   AI engineering.
                 </span>
               </p>
@@ -614,7 +568,7 @@ export default function Home() {
                 <a
                   href="/resume.pdf"
                   download
-                  className="px-6 py-2.5 rounded-lg text-sm font-semibold border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-[#00d4aa] hover:text-[#00d4aa] transition-all"
+                  className="px-6 py-2.5 rounded-lg text-sm font-semibold border border-gray-700 text-gray-300 hover:border-[#00d4aa] hover:text-[#00d4aa] transition-all"
                 >
                   Download CV
                 </a>
@@ -637,7 +591,7 @@ export default function Home() {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-lg border border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#00d4aa] hover:border-[#00d4aa]/40 transition-all text-lg"
+                    className="p-2.5 rounded-lg border border-gray-800 text-gray-400 hover:text-[#00d4aa] hover:border-[#00d4aa]/40 transition-all text-lg"
                   >
                     {icon}
                   </a>
@@ -678,7 +632,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 dark:text-gray-600 flex flex-col items-center gap-1"
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-600 flex flex-col items-center gap-1"
           >
             <span className="text-xs font-mono">scroll</span>
             <motion.div
@@ -691,10 +645,7 @@ export default function Home() {
         </section>
 
         {/* ── AI PROJECTS ── */}
-        <section
-          id="ai-projects"
-          className="py-24 px-5 bg-gray-50 dark:bg-gray-900"
-        >
+        <section id="ai-projects" className="py-24 px-5 bg-gray-900">
           <div className="max-w-6xl mx-auto">
             <motion.div
               className="mb-14"
@@ -706,10 +657,10 @@ export default function Home() {
               <span className="font-mono text-xs font-semibold text-[#00d4aa] uppercase tracking-widest">
                 Featured Work
               </span>
-              <h2 className="text-4xl font-bold mt-2 mb-3 text-gray-900 dark:text-white">
+              <h2 className="text-4xl font-bold mt-2 mb-3 text-white">
                 AI Projects
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 max-w-xl text-sm leading-relaxed">
+              <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
                 Built during my AI/ML learning journey — each project shipped
                 with a live demo, GitHub repo, and walkthrough video.
               </p>
@@ -730,10 +681,7 @@ export default function Home() {
         </section>
 
         {/* ── WEB PROJECTS ── */}
-        <section
-          id="web-projects"
-          className="py-24 px-5 bg-white dark:bg-gray-950"
-        >
+        <section id="web-projects" className="py-24 px-5 bg-gray-950">
           <div className="max-w-6xl mx-auto">
             <motion.div
               className="mb-14"
@@ -745,10 +693,10 @@ export default function Home() {
               <span className="font-mono text-xs font-semibold text-[#6c63ff] uppercase tracking-widest">
                 Previous Work
               </span>
-              <h2 className="text-4xl font-bold mt-2 mb-3 text-gray-900 dark:text-white">
+              <h2 className="text-4xl font-bold mt-2 mb-3 text-white">
                 Web Development
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 max-w-xl text-sm leading-relaxed">
+              <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
                 Projects from my full-stack development phase — real client work
                 and personal builds.
               </p>
@@ -769,7 +717,7 @@ export default function Home() {
         </section>
 
         {/* ── SKILLS ── */}
-        <section id="skills" className="py-24 px-5 bg-gray-50 dark:bg-gray-900">
+        <section id="skills" className="py-24 px-5 bg-gray-900">
           <div className="max-w-6xl mx-auto">
             <motion.div
               className="mb-14"
@@ -781,7 +729,7 @@ export default function Home() {
               <span className="font-mono text-xs font-semibold text-[#f59e0b] uppercase tracking-widest">
                 Tech Stack
               </span>
-              <h2 className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
+              <h2 className="text-4xl font-bold mt-2 text-white">
                 Skills & Tools
               </h2>
             </motion.div>
@@ -798,7 +746,7 @@ export default function Home() {
                 <span className="text-xs font-mono font-semibold text-[#00d4aa] uppercase tracking-widest">
                   AI / ML
                 </span>
-                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-800" />
+                <div className="flex-1 h-px bg-gray-800" />
               </div>
               <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-4">
                 {aiSkills.map((s, i) => (
@@ -818,7 +766,7 @@ export default function Home() {
                 <span className="text-xs font-mono font-semibold text-[#6c63ff] uppercase tracking-widest">
                   Web Dev
                 </span>
-                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-800" />
+                <div className="flex-1 h-px bg-gray-800" />
               </div>
               <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-4">
                 {webSkills.map((s, i) => (
@@ -830,7 +778,7 @@ export default function Home() {
         </section>
 
         {/* ── ABOUT ── */}
-        <section id="about" className="py-24 px-5 bg-white dark:bg-gray-950">
+        <section id="about" className="py-24 px-5 bg-gray-950">
           <div className="max-w-6xl mx-auto">
             <motion.div
               className="mb-14"
@@ -842,9 +790,7 @@ export default function Home() {
               <span className="font-mono text-xs font-semibold text-[#10b981] uppercase tracking-widest">
                 Background
               </span>
-              <h2 className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
-                About Me
-              </h2>
+              <h2 className="text-4xl font-bold mt-2 text-white">About Me</h2>
             </motion.div>
 
             <div className="grid lg:grid-cols-2 gap-14 items-center">
@@ -854,11 +800,11 @@ export default function Home() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={stagger}
-                className="space-y-5 text-gray-600 dark:text-gray-400 text-[15px] leading-relaxed"
+                className="space-y-5 text-gray-400 text-[15px] leading-relaxed"
               >
                 <motion.p variants={fadeUp}>
                   I&apos;m{" "}
-                  <span className="text-gray-900 dark:text-white font-semibold">
+                  <span className="text-white font-semibold">
                     Muhammad Abdullah
                   </span>
                   , an AI/ML Engineer from Pakistan currently building
@@ -881,7 +827,7 @@ export default function Home() {
                 </motion.p>
                 <motion.p variants={fadeUp}>
                   I&apos;m actively seeking my{" "}
-                  <span className="text-gray-900 dark:text-white font-semibold">
+                  <span className="text-white font-semibold">
                     first full-time AI Engineer role.
                   </span>{" "}
                   If you are working on something interesting in AI, I would
@@ -904,7 +850,7 @@ export default function Home() {
                   <a
                     href="/resume.pdf"
                     download
-                    className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-[#00d4aa] hover:text-[#00d4aa] transition-all"
+                    className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-gray-700 text-gray-300 hover:border-[#00d4aa] hover:text-[#00d4aa] transition-all"
                   >
                     Download CV
                   </a>
@@ -941,7 +887,7 @@ export default function Home() {
                     key={stat.label}
                     custom={i}
                     variants={fadeUp}
-                    className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-6 text-center"
+                    className="rounded-2xl border border-gray-800 bg-gray-900 p-6 text-center"
                   >
                     <div
                       className="text-4xl font-bold mb-1"
@@ -949,7 +895,7 @@ export default function Home() {
                     >
                       {stat.value}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 font-medium">
+                    <div className="text-xs text-gray-500 font-medium">
                       {stat.label}
                     </div>
                   </motion.div>
@@ -960,10 +906,7 @@ export default function Home() {
         </section>
 
         {/* ── CONTACT ── */}
-        <section
-          id="contact"
-          className="py-24 px-5 bg-gray-50 dark:bg-gray-900"
-        >
+        <section id="contact" className="py-24 px-5 bg-gray-900">
           <div className="max-w-6xl mx-auto">
             <motion.div
               className="mb-14"
@@ -975,9 +918,7 @@ export default function Home() {
               <span className="font-mono text-xs font-semibold text-[#ef4444] uppercase tracking-widest">
                 Let&apos;s Talk
               </span>
-              <h2 className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
-                Contact
-              </h2>
+              <h2 className="text-4xl font-bold mt-2 text-white">Contact</h2>
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-10">
@@ -987,9 +928,9 @@ export default function Home() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
-                className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm"
+                className="bg-gray-950 rounded-2xl border border-gray-800 p-8 shadow-sm"
               >
-                <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">
+                <h3 className="text-xl font-bold mb-6 text-white">
                   Send a Message
                 </h3>
                 <form
@@ -1013,7 +954,7 @@ export default function Home() {
                     <div key={id}>
                       <label
                         htmlFor={id}
-                        className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide"
+                        className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wide"
                       >
                         {label}
                       </label>
@@ -1021,14 +962,14 @@ export default function Home() {
                         type={type}
                         id={id}
                         placeholder={placeholder}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00d4aa]/40 focus:border-[#00d4aa] transition-all"
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-700 bg-gray-900 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00d4aa]/40 focus:border-[#00d4aa] transition-all placeholder-gray-600"
                       />
                     </div>
                   ))}
                   <div>
                     <label
                       htmlFor="message"
-                      className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide"
+                      className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wide"
                     >
                       Message
                     </label>
@@ -1036,7 +977,7 @@ export default function Home() {
                       id="message"
                       rows={4}
                       placeholder="Hello, I'd like to talk about..."
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00d4aa]/40 focus:border-[#00d4aa] transition-all resize-none"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-700 bg-gray-900 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00d4aa]/40 focus:border-[#00d4aa] transition-all resize-none placeholder-gray-600"
                     />
                   </div>
                   <button
@@ -1061,7 +1002,7 @@ export default function Home() {
               >
                 <motion.p
                   variants={fadeUp}
-                  className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed"
+                  className="text-gray-400 text-sm leading-relaxed"
                 >
                   I am actively looking for my first AI Engineer role. Whether
                   you have an opportunity, a collaboration idea, or just want to
@@ -1098,7 +1039,7 @@ export default function Home() {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 hover:border-gray-300 dark:hover:border-gray-700 transition-all group shadow-sm"
+                    className="flex items-center gap-4 p-4 rounded-xl border border-gray-800 bg-gray-950 hover:border-gray-700 transition-all group shadow-sm"
                   >
                     <div
                       className="p-2.5 rounded-lg text-sm"
@@ -1107,10 +1048,10 @@ export default function Home() {
                       {icon}
                     </div>
                     <div>
-                      <div className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                      <div className="text-xs text-gray-500 font-medium">
                         {label}
                       </div>
-                      <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-[#00d4aa] transition-colors">
+                      <div className="text-sm font-semibold text-gray-200 group-hover:text-[#00d4aa] transition-colors">
                         {value}
                       </div>
                     </div>
@@ -1122,8 +1063,8 @@ export default function Home() {
         </section>
 
         {/* ── FOOTER ── */}
-        <footer className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 py-8 px-5">
-          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400 dark:text-gray-600">
+        <footer className="bg-gray-950 border-t border-gray-800 py-8 px-5">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-600">
             <span className="font-mono">
               © {new Date().getFullYear()} Muhammad Abdullah
             </span>
