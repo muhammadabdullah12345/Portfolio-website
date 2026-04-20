@@ -48,9 +48,9 @@ const aiProjects = [
     description:
       "Combines dense (semantic) and sparse (BM25 keyword) embeddings stored in Pinecone. An alpha slider lets you tune the semantic-to-keyword ratio in real time. Answers are grounded strictly in retrieved chunks — no hallucinations from model memory.",
     tags: ["Python", "LangChain", "Pinecone", "Groq", "BM25", "Streamlit"],
-    github: "#",
-    demo: "#",
-    video: "#",
+    github: "https://github.com/muhammadabdullah12345/Hybrid-Search-with-Rag",
+    demo: "https://hybrid-search-with-rag.streamlit.app/",
+    video: "/videos/hybrid search.mp4",
     accent: "#00d4aa",
   },
   {
@@ -67,9 +67,10 @@ const aiProjects = [
       "Arxiv",
       "Streamlit",
     ],
-    github: "#",
-    demo: "#",
-    video: "#",
+    github:
+      "https://github.com/muhammadabdullah12345/Search-Engine-using-tools-and-agents",
+    demo: "https://search-engine2.streamlit.app/",
+    video: "/videos/search engine.mp4",
     accent: "#6c63ff",
   },
   {
@@ -79,9 +80,10 @@ const aiProjects = [
     description:
       "Sequential model with Embedding → LSTM → Dense layers trained for 100 epochs on the Gutenberg Shakespeare corpus. 20% dropout prevents overfitting. Achieved 73% accuracy. Model saved in H5 format and served via Streamlit.",
     tags: ["TensorFlow", "Keras", "LSTM", "NLTK", "Streamlit"],
-    github: "#",
-    demo: "#",
-    video: "#",
+    github:
+      "https://github.com/muhammadabdullah12345/Next-word-prediction-using-LSTM",
+    demo: "next-word-prediction1.streamlit.app",
+    video: "/videos/word prediction.mp4",
     accent: "#f59e0b",
   },
   {
@@ -91,9 +93,10 @@ const aiProjects = [
     description:
       "Sequential model with Embedding + SimpleRNN trained on the IMDB dataset. Early stopping halted training at epoch 9. Probability threshold of 50% determines positive/negative sentiment. Deployed as a Streamlit app.",
     tags: ["TensorFlow", "Keras", "RNN", "NLP", "Streamlit"],
-    github: "#",
-    demo: "#",
-    video: "#",
+    github:
+      "https://github.com/muhammadabdullah12345/Movie-review-sentiment-analysis-using-simple-RNN",
+    demo: "https://movie-sentiment-analysis2.streamlit.app/",
+    video: "/videos/sentiment analysis.mp4",
     accent: "#ef4444",
   },
   {
@@ -103,9 +106,10 @@ const aiProjects = [
     description:
       "End-to-end pipeline: Label Encoding, One-Hot Encoding, StandardScaler, train-test split. ANN trained with Keras predicts employee churn probability. Threshold at 50% for binary output. Served through a clean Streamlit interface.",
     tags: ["TensorFlow", "Keras", "ANN", "Scikit-learn", "Streamlit"],
-    github: "#",
-    demo: "#",
-    video: "#",
+    github:
+      "https://github.com/muhammadabdullah12345/ANN-classification-project",
+    demo: "https://ann-classification-project-casvxnkrrvb5qkzyr4rmvp.streamlit.app/",
+    video: "/videos/churn prediction.mp4",
     accent: "#10b981",
   },
 ];
@@ -141,7 +145,7 @@ const webProjects = [
     description:
       "Location discovery platform with AI-powered image search, wishlists, and booking.",
     github: "https://github.com/inlights2/legend-locations",
-    live: "https://legend-locations.vercel.app/",
+    live: "https://staging.legendlocations.com",
     image: "/images/project4.jpg",
   },
 ];
@@ -584,7 +588,10 @@ export default function Home() {
                     href: "https://www.linkedin.com/in/i-abdullah-chaudhary/",
                     icon: <FaLinkedin />,
                   },
-                  { href: "mailto:abd0172817@gmail.com", icon: <FaEnvelope /> },
+                  {
+                    href: "mailto:i.abdullahatwork@gmail.com",
+                    icon: <FaEnvelope />,
+                  },
                 ].map(({ href, icon }, i) => (
                   <a
                     key={i}
@@ -1013,8 +1020,8 @@ export default function Home() {
                   {
                     icon: <FaEnvelope />,
                     label: "Email",
-                    value: "abd0172817@gmail.com",
-                    href: "mailto:abd0172817@gmail.com",
+                    value: "i.abdullahatwork@gmail.com",
+                    href: "mailto:i.abdullahatwork@gmail.com",
                     color: "#ef4444",
                   },
                   {
